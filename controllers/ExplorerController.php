@@ -119,7 +119,7 @@ class ExplorerController extends Controller {
 		if (preg_match("/[^A-Za-z0-9]/", $_GET['hash']))
 			throw new Exception('Wrong request');
 
-		$address = $this->_storage->getAddress($_GET['hash']);
+		$address = $this->_storage->isAddressAvailable($_GET['hash']);
 
 		if (!$address) {
 			$address = [
@@ -135,19 +135,15 @@ class ExplorerController extends Controller {
 			return $this->render('address', compact('address','inputs','outputs','transactions','ignoredAddress'));
 		}
 
-		if ($ignoredAddress == $address['address'])
-			return $this->render('system_address');
-
-		$inputs = $this->_storage->getInputsForAddress($address['address']);
-		$outputs = $this->_storage->getOutputsForAddress($address['address']);
+		$address = $_GET['hash'];
 		
-		$items = $this->_storage->getCountTransactionsForAddress($address['address'], $inputs, $outputs);
+		$items = $this->_storage->getCountTransactionsForAddress($address);
 		$pagination = new Pagination(['items'=>$items]);
 		$paginator = $pagination->getPaginator('?r=explorer/address&hash='.(isset($_GET['hash']) ? $_GET['hash'] : ''));
 		
-		$transactions = $this->_storage->getTransactionsForAddress($address['address'], $inputs, $outputs, $pagination->start, $pagination->perPage);
+		$transactions = $this->_storage->getTransactionsForAddress($address, $pagination->start, $pagination->perPage);
 
-		return $this->render('address', compact('address','inputs','outputs','transactions','ignoredAddress', 'paginator', 'items'));
+		return $this->render('address', compact('address', 'transactions', 'paginator', 'items'));
 	}
 
 	/**

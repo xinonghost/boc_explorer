@@ -203,16 +203,16 @@ class Storage {
 	 * Get address.
 	 *
 	 * @param string
-	 * @return string
+	 * @return boolean
 	 */
-	public function getAddress($address) {
-		$result = $this->query('SELECT * FROM address WHERE address = \''.$address.'\'');
+	public function isAddressAvailable($address) {
+		$result = $this->query('SELECT count(*) as cnt FROM transaction WHERE input = \''.$address.'\' or output = \''.$address.'\'');
 
 		if (!$result || $result->num_rows < 1)
 			return '';
 
 		$address = $result->fetch_assoc();
-		return $address;
+		return $address['cnt'] > 0;
 	}
 
 	/**
@@ -221,29 +221,12 @@ class Storage {
 	 * @param string
 	 * @return array
 	 */
-	public function getTransactionsForAddress($address, $inputs, $outputs, $start = null, $limit = null) {
+	public function getTransactionsForAddress($address, $start = null, $limit = null) {
 		$txs = [];
-		
-		if (count($inputs) > 0) {
-			foreach ($inputs as $items) {
-				foreach ($items as $input)
-					if (!in_array($input['txid'], $txs)) $txs[] = $input['txid'];
-			}
-		}
-		
-		if (count($outputs) > 0) {
-			foreach ($outputs as $items) {
-				foreach ($items as $output)
-					if (!in_array($output['txid'], $txs)) $txs[] = $output['txid'];
-			}
-		}
-
-		if (empty($txs))
-			return [];
 
 		$chunk = $limit !== null ? ' LIMIT '.$start.', '.$limit : '';
 
-		$txResult = $this->query('SELECT * FROM '.$this->transactionTable.' WHERE hash IN (\''.(join("','", $txs)).'\') ORDER BY createdAt DESC, id DESC'.$chunk);
+		$txResult = $this->query('SELECT * FROM '.$this->transactionTable.' WHERE (input = \''.$address.'\' and type = 0) or output = \''.$address.'\' ORDER BY createdAt DESC, id DESC'.$chunk);
 
 		if (!$txResult || $txResult->num_rows < 1)
 			return [];
@@ -264,27 +247,10 @@ class Storage {
 	 * @param string
 	 * @return array
 	 */
-	public function getCountTransactionsForAddress($address, $inputs, $outputs) {
+	public function getCountTransactionsForAddress($address) {
 		$txs = [];
-		
-		if (count($inputs) > 0) {
-			foreach ($inputs as $items) {
-				foreach ($items as $input)
-					if (!in_array($input['txid'], $txs)) $txs[] = $input['txid'];
-			}
-		}
-		
-		if (count($outputs) > 0) {
-			foreach ($outputs as $items) {
-				foreach ($items as $output)
-					if (!in_array($output['txid'], $txs)) $txs[] = $output['txid'];
-			}
-		}
 
-		if (empty($txs))
-			return [];
-
-		$txResult = $this->query('SELECT count(*) as count FROM '.$this->transactionTable.' WHERE hash IN (\''.(join("','", $txs)).'\') ORDER BY createdAt ASC, id ASC');
+		$txResult = $this->query('SELECT count(*) as count FROM '.$this->transactionTable.' WHERE (input = \''.$address.'\' and type = 0) or output = \''.$address.'\'');
 
 		if (!$txResult || $txResult->num_rows < 1)
 			return 0;

@@ -16,8 +16,8 @@
 				<div class="row">
 					<div class="col-md-12">
 						<div class="page-title">
-							<h1>Minexcoin address</h1>
-							<p>Addresses are identifiers that you use to send minexcoins to another person.</p>
+							<h1>BOC address</h1>
+							<p>Addresses are identifiers that you use to send BOC to another person.</p>
 						</div>
 					</div>
 				</div>
@@ -41,7 +41,7 @@
 								<tr>
 									<td>Address</td>
 									<td>
-										<div class="hash-value"><?php echo $address['address']; ?></div>
+										<div class="hash-value"><?php echo $address; ?></div>
 									</td>
 								</tr>
 							</tbody>
@@ -57,35 +57,6 @@
 								<tr>
 									<td>Number of transactions</td>
 									<td><?php echo $items; ?></td>
-								</tr>
-								<tr>
-									<td>Total received</td>
-									<td>
-									<?php
-										$received = 0;
-										if (count($outputs) > 0) {
-											foreach ($outputs as $items) {
-												foreach ($items as $output)
-													$received = round($received + (float)$output['amount'], 8);
-											}
-										}
-
-										$sent = 0;
-
-										if (count($inputs) > 0) {
-											foreach ($inputs as $items) {
-												foreach ($items as $input)
-													$sent = round($sent + (float)$input['amount'], 8);
-										}
-									}
-
-									echo Money::formateWithCurrency($received);
-									?>
-									</td>
-								</tr>
-								<tr>
-									<td>Total balance</td>
-									<td><?php echo Money::formateWithCurrency($received-$sent); ?></td>
 								</tr>
 							</tbody>
 						</table>

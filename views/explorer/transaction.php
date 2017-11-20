@@ -45,7 +45,7 @@
 											} else {
 											?>
 												<td>Emitted contract</td>
-												<td><?php echo $transaction['output']; ?></td>
+												<td><a href="?r=explorer/address&hash=<?php echo $transaction['output']; ?>"><?php echo $transaction['output']; ?></a></td>
 												<td><?php echo base64_decode($transaction['input']) ?></td>
 												<td><div class="green-bg"><?php echo $transaction['blockId'] == 0 ? '0' : $this->_storage->getHeight()-$block['height']+1; ?> confirmation</div></td>
 											<?php
