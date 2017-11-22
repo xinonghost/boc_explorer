@@ -40,7 +40,7 @@
 							if ($transaction['type'] == 0) {
 								$contractTransaction = $this->_storage->getTransactionByHash($transaction['contract_id']);
 								?>
-									<td><a href="?explorer/tx&hash=<?php echo $transaction['input']; ?>"><?php echo $transaction['input']; ?></a></td>
+									<td><a href="?r=explorer/tx&hash=<?php echo $transaction['input']; ?>"><?php echo $transaction['input']; ?></a></td>
 									<td><a href="?r=explorer/address&hash=<?php echo $transaction['output']; ?>"><?php echo $transaction['output']; ?></a></td>
 									<td><a href="?r=explorer/tx&hash=<?php echo $transaction['contract_id']; ?>"><?php echo base64_decode($contractTransaction['input']); ?></td>
 									<td><div class="green-bg"><?php echo $this->_storage->getHeight()-$block['height']+1; ?> confirmation</div></td>
@@ -48,7 +48,7 @@
 							} else {
 								?>
 									<td>Emitted contract</td>
-									<td><?php echo $transaction['output']; ?></td>
+									<td><a href="?r=explorer/address&hash=<?php echo $transaction['output']; ?>"><?php echo $transaction['output']; ?></a></td>
 									<td><?php echo base64_decode($transaction['input']) ?></td>
 									<td><div class="green-bg"><?php echo $this->_storage->getHeight()-$block['height']+1; ?> confirmation</div></td>
 								<?php
